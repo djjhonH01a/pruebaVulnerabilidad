@@ -25,4 +25,4 @@ def download_file(url, destination):
     # VULNERABLE
     os.system(f"wget {url} -O {destination}")
 dddddddddddd
-    return "Download completed"
+    return "Download completed"adasdadadad
