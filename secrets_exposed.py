@@ -31,4 +31,4 @@ def get_user_data(user_id):
     cursor.execute(query)
     
     return cursor.fetchall()
-    
+# ffdfrgtrgtrg
