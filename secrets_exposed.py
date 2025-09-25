@@ -1,27 +1,49 @@
 
+import sqlite3
 import os
 import subprocess
 
-def backup_user_files(username):
+def authenticate_user_secure(username, password):
     """
-    ARCHIVO VULNERABLE - Command Injection
-    Permite ejecución de comandos arbitrarios
+    ARCHIVO SEGURO - Uso correcto de consultas parametrizadas
     """
-    # VULNERABLE: concatenación directa en comando del sistema
-    backup_command = "tar -czf backup.tar.gz /home/" + username + "/documents"
-    os.system(backup_command)
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
     
-    return "Backup completed for " + username
+    # SEGURO: consulta parametrizada
+    query = "SELECT * FROM users WHERE username=? AND password=?"
+    cursor.execute(query, (username, password))
+    
+    user = cursor.fetchone()
+    conn.close()
+    
+    if user:
+        return {"success": True, "user_id": user[0]}
+    else:
+        return {"success": False, "error": "Invalid credentials"}
 
-def process_log_file(filename):
-    """Otra función con command injection"""
-    # VULNERABLE: permite inyección de comandos
-    command = ["grep", "ERROR", "/var/log/" + filename]
-    result = subprocess.call(command, shell=True)
-    return result
+def validate_user_input(input_string):
+    """Función con validación apropiada"""
+    # Validar entrada
+    if not input_string or len(input_string) > 100:
+        raise ValueError("Invalid input length")
+    
+    # Sanitizar caracteres peligrosos
+    allowed_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
+    if not all(c in allowed_chars for c in input_string):
+        raise ValueError("Invalid characters in input")
+    
+    return input_string
 
-def download_file(url, destination):
-    """Función peligrosa con wget"""
-    # VULNERABLE
-    os.system(f"wget {url} -O {destination}")
+def calculate_total(items):
+    """Función matemática simple y segura"""
+    if not isinstance(items, list):
+        return 0
+    
+    total = 0
+    for item in items:
+        if isinstance(item, (int, float)) and item >= 0:
+            total += item
+    
+    return total
     
