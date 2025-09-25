@@ -32,4 +32,8 @@ def include_template(template_name):
     
     with open(template_path, 'r') as template:
         return template.read()
-    
+
+
+
+
+# Ejemplos de uso
