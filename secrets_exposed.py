@@ -1,37 +1,27 @@
 
-import sqlite3
+import os
+import subprocess
 
-def authenticate_user(username, password):
+def backup_user_files(username):
     """
-    ARCHIVO VULNERABLE - SQL Injection
-    Este código es vulnerable porque concatena directamente la entrada del usuario
+    ARCHIVO VULNERABLE - Command Injection
+    Permite ejecución de comandos arbitrarios
     """
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
+    # VULNERABLE: concatenación directa en comando del sistema
+    backup_command = "tar -czf backup.tar.gz /home/" + username + "/documents"
+    os.system(backup_command)
     
-    # VULNERABLE: concatenación directa permite inyección SQL
-    query = "SELECT * FROM users WHERE username='" + username + "' AND password='" + password + "'"
-    cursor.execute(query)
-    
-    user = cursor.fetchone()
-    conn.close()
-    
-    if user:
-        return {"success": True, "user_id": user[0]}
-    else:
-        return {"success": False, "error": "Invalid credentials"}
+    return "Backup completed for " + username
 
-def get_user_data(user_id):
-    """Otra función vulnerable"""
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-    
-    # También vulnerable
-    query = f"SELECT * FROM user_data WHERE id = {user_id}"
-    cursor.execute(query)
-    
-    return cursor.fetchall()
+def process_log_file(filename):
+    """Otra función con command injection"""
+    # VULNERABLE: permite inyección de comandos
+    command = ["grep", "ERROR", "/var/log/" + filename]
+    result = subprocess.call(command, shell=True)
+    return result
 
-
-##ejemplo3333
+def download_file(url, destination):
+    """Función peligrosa con wget"""
+    # VULNERABLE
+    os.system(f"wget {url} -O {destination}")
     
