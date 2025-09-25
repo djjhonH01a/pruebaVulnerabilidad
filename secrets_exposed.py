@@ -1,34 +1,35 @@
 
-import sqlite3
+import os
 
-def authenticate_user(username, password):
+def read_user_file(filename):
     """
-    ARCHIVO VULNERABLE - SQL Injection
-    Este código es vulnerable porque concatena directamente la entrada del usuario
+    ARCHIVO VULNERABLE - Path Traversal
+    Permite acceso a archivos fuera del directorio permitido
     """
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
+    # VULNERABLE: no valida la ruta del archivo
+    file_path = "/var/www/uploads/" + filename
     
-    # VULNERABLE: concatenación directa permite inyección SQL
-    query = "SELECT * FROM users WHERE username='" + username + "' AND password='" + password + "'"
-    cursor.execute(query)
-    
-    user = cursor.fetchone()
-    conn.close()
-    
-    if user:
-        return {"success": True, "user_id": user[0]}
-    else:
-        return {"success": False, "error": "Invalid credentials"}
+    try:
+        with open(file_path, 'r') as file:
+            return file.read()
+    except Exception as e:
+        return f"Error: {e}"
 
-def get_user_data(user_id):
-    """Otra función vulnerable"""
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
+def save_user_upload(filename, content):
+    """Función vulnerable a directory traversal"""
+    # VULNERABLE: permite escribir en cualquier ubicación
+    save_path = "./uploads/" + filename
     
-    # También vulnerable
-    query = f"SELECT * FROM user_data WHERE id = {user_id}"
-    cursor.execute(query)
+    with open(save_path, 'w') as file:
+        file.write(content)
     
-    return cursor.fetchall()
-# ffdfrgtrgtrg
+    return f"File saved: {save_path}"
+
+def include_template(template_name):
+    """Función que permite inclusión de archivos arbitrarios"""
+    # VULNERABLE: permite ../../../etc/passwd
+    template_path = "./templates/" + template_name
+    
+    with open(template_path, 'r') as template:
+        return template.read()
+    
