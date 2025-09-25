@@ -1,18 +1,17 @@
 
 import sqlite3
-import os
-import subprocess
 
-def authenticate_user_secure(username, password):
+def authenticate_user(username, password):
     """
-    ARCHIVO SEGURO - Uso correcto de consultas parametrizadas
+    ARCHIVO VULNERABLE - SQL Injection
+    Este código es vulnerable porque concatena directamente la entrada del usuario
     """
     conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
     
-    # SEGURO: consulta parametrizada
-    query = "SELECT * FROM users WHERE username=? AND password=?"
-    cursor.execute(query, (username, password))
+    # VULNERABLE: concatenación directa permite inyección SQL
+    query = "SELECT * FROM users WHERE username='" + username + "' AND password='" + password + "'"
+    cursor.execute(query)
     
     user = cursor.fetchone()
     conn.close()
@@ -22,28 +21,14 @@ def authenticate_user_secure(username, password):
     else:
         return {"success": False, "error": "Invalid credentials"}
 
-def validate_user_input(input_string):
-    """Función con validación apropiada"""
-    # Validar entrada
-    if not input_string or len(input_string) > 100:
-        raise ValueError("Invalid input length")
+def get_user_data(user_id):
+    """Otra función vulnerable"""
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
     
-    # Sanitizar caracteres peligrosos
-    allowed_chars = set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_")
-    if not all(c in allowed_chars for c in input_string):
-        raise ValueError("Invalid characters in input")
+    # También vulnerable
+    query = f"SELECT * FROM user_data WHERE id = {user_id}"
+    cursor.execute(query)
     
-    return input_string
-
-def calculate_total(items):
-    """Función matemática simple y segura"""
-    if not isinstance(items, list):
-        return 0
-    
-    total = 0
-    for item in items:
-        if isinstance(item, (int, float)) and item >= 0:
-            total += item
-    
-    return total
+    return cursor.fetchall()
     
