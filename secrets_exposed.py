@@ -19,9 +19,4 @@ def process_log_file(filename):
     command = ["grep", "ERROR", "/var/log/" + filename]
     result = subprocess.call(command, shell=True)
     return result
-
-def download_file(url, destination):
-    """Función peligrosa con wget"""
-    # VULNERABLE
-    os.system(f"wget {url} -O {destination}")
     
