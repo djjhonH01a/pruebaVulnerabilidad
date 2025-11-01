@@ -19,4 +19,12 @@ def process_log_file(filename):
     command = ["grep", "ERROR", "/var/log/" + filename]
     result = subprocess.call(command, shell=True)
     return result
+
+def process_log_file(filename):
+    """Otra función con command injection"""
+    # VULNERABLE: permite inyección de comandos
+    command = ["grep", "ERROR", "/var/log/" + filename]
+    result = subprocess.call(command, shell=True)
+    return result
+
     
