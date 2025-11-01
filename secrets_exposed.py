@@ -1,4 +1,10 @@
-def ejecutar_comando_inseguro(filename):
-    import os
-    # INSEGURO: permite inyección de comandos
-    os.system("cat " + filename)
+def conectar_db_inseguro():
+    import mysql.connector
+    # INSEGURO: credenciales en código
+    connection = mysql.connector.connect(
+        host="localhost",
+        user="admin",
+        password="admin123",
+        database="mydb"
+    )
+    return connection
