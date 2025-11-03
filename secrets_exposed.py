@@ -1,6 +1,6 @@
 def conectar_db_inseguro():
     import mysql.connector
-    # INSEGURO: credenciales en código
+    # INSEGURO: credenciales en código 222
     connection = mysql.connector.connect(
         host="localhost",
         user="admin",
